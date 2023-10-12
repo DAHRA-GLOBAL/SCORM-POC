@@ -24,3 +24,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+Route::get('/hello', function () {
+    return 'Hello world';
+});
