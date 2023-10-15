@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ScormController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,3 +29,6 @@ require __DIR__.'/auth.php';
 Route::get('/hello', function () {
     return 'Hello world';
 });
+Route::get('/scorm', [ScormController::class, 'index']);
+Route::get('/scorm/create', [ScormController::class, 'create'])->name('scorm.create');
+Route::post('/scorm/store', [ScormController::class, 'store'])->name('scorm.store');

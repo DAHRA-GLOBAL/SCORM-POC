@@ -26,4 +26,12 @@ return [
      */
     'disk' => 'local',
     'archive' => 'local',
+
+    //    'disks' => [
+    //        'local' => [
+    //            'driver' => 'local',
+    //            'root' => env('SCORM_ROOT_DIR'), // set root dir
+    //            'visibility' => 'public',
+    //        ],
+    //    ],
 ];

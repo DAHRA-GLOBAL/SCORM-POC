@@ -20,9 +20,9 @@ class CreateScormTables extends Migration
         }
 
         // scorm_model
-        Schema::create($tableNames['scorm_table'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['scorm_table'], function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->morphs($tableNames['resource_table']);
+            //            $table->morphs($tableNames['resource_table']);
             $table->string('title');
             $table->string('origin_file')->nullable();
             $table->string('version');
