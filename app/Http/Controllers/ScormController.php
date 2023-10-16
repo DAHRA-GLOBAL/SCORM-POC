@@ -27,7 +27,8 @@ class ScormController extends Controller
     public function index()
     {
         $items = ScormModel::all();
-        return view('scorm.index', compact('items'));
+
+        //        return view('scorm.index', compact('items'));
     }
 
     /**
@@ -64,23 +65,29 @@ class ScormController extends Controller
         return $this->respond(ScormModel::with('scos')->whereUuid($scormModel->uuid)->first());
     }
 
-//    public function playScorm($uuid){
-////        $scorm = ScormModel::with('scos')->whereUuid($uuid)->first();
-////        $scorm->play();
-//        $scormContent = $this->scormManager->getScoByUuid($uuid);
-//        return view('scorm.index', compact('scormContent'));
-//    }
+    public function playScorm()
+    {
+        //        $scorm = ScormModel::with('scos')->whereUuid($uuid)->first();
+        //        $scorm->play();
+
+        $scoUuid = ScormModel::with('scos')->first();
+        $scormContent = $this->scormManager->getScoByUuid($scoUuid->uuid);
+
+        dd($scormContent);
+
+        return $scormContent;
+    }
 
     /**
      * Display the specified resource.
      */
-//    public function show(Scorm $scorm)
-//    {
-//        $item = ScormModel::with('scos')->first();
-//
-//        // response helper function from base controller reponse json.
-//        return view('scorm.index', compact('item'));
-//    }
+    public function show(Scorm $scorm)
+    {
+        $item = ScormModel::with('scos')->first();
+
+        // response helper function from base controller reponse json.
+        return view('scorm.index', compact('item'));
+    }
 
     /**
      * Show the form for editing the specified resource.

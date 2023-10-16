@@ -6,7 +6,7 @@
     </x-slot>
     <div class="container mx-auto px-4 text-white">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <iframe src="{{ asset('/app/0a954e01-27e6-4198-a46b-6e7a858d2b3e/Playing/Playing.html') }}" width="100%" height="100%" style="border: none;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe src="{{asset('storage/25ff84ad-ce8e-40ca-9726-fc901568327a/index_scorm.html')}}" width="100%" height="550px" style="border: none;" allowfullscreen loading="lazy"></iframe>
         </div>
 {{--        <script>--}}
 {{--            var settings = {--}}
