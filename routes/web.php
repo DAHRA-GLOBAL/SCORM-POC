@@ -27,3 +27,4 @@ Route::view('profile', 'profile')
 require __DIR__.'/auth.php';
 Route::get('/create', [ScormController::class, 'create'])->name('scorm.create');
 Route::post('/upload', [ScormController::class, 'upload'])->name('scorm.upload');
+Route::post('/parse', [ScormController::class, 'parse'])->name('scorm.parse');

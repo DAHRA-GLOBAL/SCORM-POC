@@ -87,11 +87,10 @@ class ScormController extends EscolaLmsBaseController
     {
         $file = $request->file('zip');
 
-        dd($file);
         try {
 
             $data = $this->scormService->parseScormArchive($file);
-            dd($data);
+
             $data = $this->scormService->removeRecursion($data);
         } catch (Exception $error) {
             $this->sendError($error->getMessage(), 422);
