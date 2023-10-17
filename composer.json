@@ -12,7 +12,9 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
-        "livewire/volt": "^1.0"
+        "livewire/volt": "^1.0",
+        "ext-zip": "*",
+        "ext-dom": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

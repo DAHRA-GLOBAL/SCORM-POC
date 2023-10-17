@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ScormController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +25,5 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+Route::get('/create', [ScormController::class, 'create'])->name('scorm.create');
+Route::post('/upload', [ScormController::class, 'upload'])->name('scorm.upload');
