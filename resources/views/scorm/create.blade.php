@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
     <div class="container mx-auto px-4 text-white">
-        <form action="{{ route('scorm.upload') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('scorm.upload') }}" method="POST" >
             @csrf
             <div class="mb-4">
                 <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Title</label>
