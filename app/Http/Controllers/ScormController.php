@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Peopleaps\Scorm\Entity\Scorm;
 use Peopleaps\Scorm\Manager\ScormManager;
 use Peopleaps\Scorm\Model\ScormModel;
+use Peopleaps\Scorm\Model\ScormScoModel;
 
 class ScormController extends Controller
 {
@@ -26,9 +29,9 @@ class ScormController extends Controller
      */
     public function index()
     {
-        $items = ScormModel::all();
+        $scorms = ScormModel::all();
 
-        //        return view('scorm.index', compact('items'));
+        return view('scorm.index', compact('scorms'));
     }
 
     /**
@@ -57,25 +60,21 @@ class ScormController extends Controller
         // You can use the `uploadScormArchive` method to upload a SCORM package from a file.
         $scormModel = $this->scormManager->uploadScormArchive($file);
 
-        dd($scormModel);
         // Save the SCORM package with the associated user.
         $scormModel->save();
+
+        dd($scormModel);
 
         // Response with the saved SCORM model.
         return $this->respond(ScormModel::with('scos')->whereUuid($scormModel->uuid)->first());
     }
 
-    public function playScorm()
+    public function playScorm($uuid)
     {
-        //        $scorm = ScormModel::with('scos')->whereUuid($uuid)->first();
-        //        $scorm->play();
-
         $scoUuid = ScormModel::with('scos')->first();
         $scormContent = $this->scormManager->getScoByUuid($scoUuid->uuid);
 
-        dd($scormContent);
-
-        return $scormContent;
+        return view('scorm.play', ['data' => $scormContent]);
     }
 
     /**
@@ -83,10 +82,27 @@ class ScormController extends Controller
      */
     public function show(Scorm $scorm)
     {
-        $item = ScormModel::with('scos')->first();
+        $item = ScormScoModel::with('scoTrackings')->first();
 
         // response helper function from base controller reponse json.
-        return view('scorm.index', compact('item'));
+        return view('scorm.play', compact('item'));
+    }
+
+    public function createScormTracking(Request $request)
+    {
+        Log::info('createScormTracking');
+        $createTracking = $this->scormManager->createScoTracking($request->uuid, auth()->user()->id, auth()->user()->name);
+
+        Log::info('tracking completed', ['trackingData' => $createTracking]);
+
+        return response()->json($createTracking);
+    }
+
+    public function updateScormTracking(Request $request)
+    {
+        Log::info('updateScormTracking');
+        $updateTracking = $this->scormManager->updateScoTracking($request->uuid, auth()->user()->id, $request->data);
+        Log::info('tracking update completed', ['updateTrackingData' => $updateTracking]);
     }
 
     /**

@@ -25,12 +25,15 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
-Route::get('/scorm/play', [ScormController::class, 'playScorm'])->name('scorm.play');
 
 Route::get('/hello', function () {
     return 'Hello world';
 });
-//Route::get('/scorm', [ScormController::class, 'index'])->name('scorm.index');
-//Route::get('/scorm/create', [ScormController::class, 'create'])->name('scorm.create');
-//Route::post('/scorm/store', [ScormController::class, 'store'])->name('scorm.store');
-//Route::get('/scorm/{scorm}', [ScormController::class, 'show'])->name('scorm.show');
+
+Route::get('/scorm', [ScormController::class, 'index'])->name('scorm.index');
+Route::get('/scorm/create', [ScormController::class, 'create'])->name('scorm.create');
+Route::get('/scorm/play/{uuid}', [ScormController::class, 'playScorm'])->name('scorm.play');
+Route::post('/scorm/store', [ScormController::class, 'store'])->name('scorm.store');
+Route::get('/scorm/{scorm}', [ScormController::class, 'show'])->name('scorm.show');
+Route::post('/scorm/track/{uuid}', [ScormController::class, 'createScormTracking'])->name('scorm.track');
+Route::post('/scorm/track/update/{uuid}', [ScormController::class, 'updateScormTracking'])->name('scorm.track.update');
