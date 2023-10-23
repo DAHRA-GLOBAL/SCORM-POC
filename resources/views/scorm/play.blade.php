@@ -20,7 +20,7 @@
             window.API = new Scorm12API(settings);
             console.log(window.API);
             var data = window.API.cmi;
-            console.log(settings.data);
+            // console.log(settings.data);
 
             window.API.on('LMSInitialize', function() {
                 console.log('LMSInitialize');
@@ -28,16 +28,18 @@
             });
 
             window.API.on('LMSCommit', function() {
-                console.log('LMSCommit');
                 updateTracking();
             })
 
             function createTracking() {
-               axios.post('{{ route('scorm.track', ['uuid' => $item->uuid]) }}', {
+               axios.post('/scorm/track/{{ $item->uuid }}', {
                    _token: '{{ csrf_token() }}',
-                   uuid: '{{ $item->uuid }}'
+                   uuid: '{{ $item->uuid }}',
+                   data: window.API.cmi.core
+
                }).then(response => {
-                   console.log(response.data);
+                   data = response.data;
+                   console.log(window.API.cmi);
                }).catch(error => {
                    console.log(error);
                })
@@ -48,9 +50,12 @@
                 axios.post('{{ route('scorm.track.update', ['uuid' => $item->uuid]) }}', {
                     _token: '{{ csrf_token() }}',
                     uuid: '{{ $item->uuid }}',
-                    data: data
+                    data: window.API.cmi.core
                 }).then(response => {
+                    console.log("updating");
+                    console.log(data);
                     console.log(response.data);
+                    console.log("updated");
                 }).catch(error => {
                     console.log(error);
                 })
@@ -60,6 +65,6 @@
 
 
         </script>
-        <iframe src="{{asset('storage/8a5e12de-d24d-4955-9e7b-2b61f4849728/index_scorm.html')}}" width="800" height="400"></iframe>
+        <iframe src="{{asset('storage/5481612a-ac84-483c-8cc7-1584f43fe141/index_lms.html')}}" width="800" height="400"></iframe>
     </div>
 </x-app-layout>

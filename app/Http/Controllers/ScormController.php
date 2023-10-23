@@ -90,6 +90,7 @@ class ScormController extends Controller
 
     public function createScormTracking(Request $request)
     {
+        dd($request->all());
         Log::info('createScormTracking');
         $createTracking = $this->scormManager->createScoTracking($request->uuid, auth()->user()->id, auth()->user()->name);
 
@@ -101,7 +102,7 @@ class ScormController extends Controller
     public function updateScormTracking(Request $request)
     {
         Log::info('updateScormTracking');
-        $updateTracking = $this->scormManager->updateScoTracking($request->uuid, auth()->user()->id, $request->data);
+        $updateTracking = $this->scormManager->updateScoTracking($request->uuid, auth()->user()->getAuthIdentifier(), $request->data);
         Log::info('tracking update completed', ['updateTrackingData' => $updateTracking]);
     }
 
