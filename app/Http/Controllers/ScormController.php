@@ -101,6 +101,7 @@ class ScormController extends Controller
 
     public function updateScormTracking(Request $request)
     {
+        dd($request->all());
         Log::info('updateScormTracking');
         $updateTracking = $this->scormManager->updateScoTracking($request->uuid, auth()->user()->getAuthIdentifier(), $request->data);
         Log::info('tracking update completed', ['updateTrackingData' => $updateTracking]);

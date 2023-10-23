@@ -35,7 +35,7 @@
                axios.post('/scorm/track/{{ $item->uuid }}', {
                    _token: '{{ csrf_token() }}',
                    uuid: '{{ $item->uuid }}',
-                   data: window.API.cmi.core
+                   data: window.API.cmi
 
                }).then(response => {
                    data = response.data;
@@ -46,20 +46,35 @@
                 console.log("tracking")
             }
 
-            function updateTracking() {
-                axios.post('{{ route('scorm.track.update', ['uuid' => $item->uuid]) }}', {
-                    _token: '{{ csrf_token() }}',
-                    uuid: '{{ $item->uuid }}',
-                    data: window.API.cmi.core
-                }).then(response => {
+            async function updateTracking() {
+                try {
+                    const response = await axios.post('{{ route('scorm.track.update', ['uuid' => $item->uuid]) }}', {
+                        _token: '{{ csrf_token() }}',
+                        uuid: '{{ $item->uuid }}',
+                        data: window.API.cmi
+                    });
+
                     console.log("updating");
-                    console.log(data);
-                    console.log(response.data);
+                    console.log(window.API.cmi);
                     console.log("updated");
-                }).catch(error => {
+                } catch (error) {
                     console.log(error);
-                })
+                }
             }
+
+            {{--function updateTracking() {--}}
+            {{--    axios.post('{{ route('scorm.track.update', ['uuid' => $item->uuid]) }}', {--}}
+            {{--        _token: '{{ csrf_token() }}',--}}
+            {{--        uuid: '{{ $item->uuid }}',--}}
+            {{--        data: window.API.cmi--}}
+            {{--    }).then(response => {--}}
+            {{--        console.log("updating");--}}
+            {{--        console.log(response.data);--}}
+            {{--        console.log("updated");--}}
+            {{--    }).catch(error => {--}}
+            {{--        console.log(error);--}}
+            {{--    })--}}
+            {{--}--}}
 
 
 
