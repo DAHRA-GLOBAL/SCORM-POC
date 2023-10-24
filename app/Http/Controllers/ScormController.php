@@ -15,7 +15,6 @@ use Peopleaps\Scorm\Model\ScormModel;
 use Peopleaps\Scorm\Model\ScormScoModel;
 use Peopleaps\Scorm\Model\ScormScoTrackingModel;
 use Ramsey\Uuid\Uuid;
-use function Laravel\Prompts\table;
 
 class ScormController extends Controller
 {
@@ -97,7 +96,7 @@ class ScormController extends Controller
     //real call to create scorm
     public function createScormTracking(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         Log::info('createScormTracking');
         $createTracking = $this->createScoTracking($request->uuid, auth()->user()->getAuthIdentifier());
         dd($createTracking);
@@ -112,18 +111,22 @@ class ScormController extends Controller
      */
     public function updateScormTracking(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         try {
             $totalTime = $request->input('data.core.total_time');
             $sessionTime = $request->input('data.core.session_time');
+            $progression = $request->input('data.progress_measure');
             $sessionTimeInHundredth = $this->convertTimeInHundredth($sessionTime);
             $tracking = $this->createScoTracking($request->uuid, auth()->user()->getAuthIdentifier());
             $tracking->setLatestDate(Carbon::now());
             $tracking->setLessonStatus($request->input('data.core.lesson_status'));
             $tracking->setCompletionStatus($request->input('data.core.completion_status'));
             $tracking->setSuspendData($request->input('data.core.suspend_data'));
-            $tracking->setProgression(100);
+            if ($sessionTime == $totalTime || $tracking->lessonStatus == 'completed') {
+                $tracking->setProgression(100);
+            }
             $tracking->setScoreMin($request->input('data.core.score.min'));
+
             $tracking->setScoreMax($request->input('data.core.score.max'));
             $tracking->setScoreScaled($request->input('data.core.score_scaled'));
             $tracking->setScoreRaw($request->input('data.core.score.raw'));
@@ -138,7 +141,6 @@ class ScormController extends Controller
             }
 
             $tracking->setTotalTime($totalTimeInHundredth, Scorm::SCORM_12);
-
 
             $sco = $tracking->getSco();
             $scorm = ScormModel::where('id', $sco['scorm_id'])->firstOrFail();
@@ -160,19 +162,18 @@ class ScormController extends Controller
                 'total_time_string' => $tracking->getTotalTimeString(),
 
             ]);
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             throw new \Exception($e->getMessage());
         }
 
         dd($updateResult);
-//        dd($request->all());
+        //        dd($request->all());
 
-//        Log::info('updateScormTracking');
-//        $updateTracking = $this->updateScoTracking($request->uuid,auth()->user()->getAuthIdentifier(), $request->all());
-//        dd($updateTracking);
-//        Log::info('tracking update completed', ['updateTrackingData' => $updateTracking]);
-   }
-
+        //        Log::info('updateScormTracking');
+        //        $updateTracking = $this->updateScoTracking($request->uuid,auth()->user()->getAuthIdentifier(), $request->all());
+        //        dd($updateTracking);
+        //        Log::info('tracking update completed', ['updateTrackingData' => $updateTracking]);
+    }
 
     //implementation of create scorm
     public function createScoTracking($scoUuid, $userId = null): ScoTracking
@@ -217,7 +218,7 @@ class ScormController extends Controller
         // Create a new tracking model
         $storeTracking = ScormScoTrackingModel::firstOrCreate([
             'user_id' => $userId,
-            'sco_id' => $sco->id
+            'sco_id' => $sco->id,
         ], [
             'uuid' => Uuid::uuid4(),
             'progression' => $scoTracking->getProgression(),
@@ -267,7 +268,6 @@ class ScormController extends Controller
         return $scoTracking;
     }
 
-
     //implementation of update scorm
 
     /**
@@ -286,33 +286,33 @@ class ScormController extends Controller
         ];
         $tracking = $this->createScoTracking($scoUuid, $userId);
         $tracking->setLatestDate(Carbon::now());
-//        $tracking->setLessonStatus($statusPriority[4]);
+        //        $tracking->setLessonStatus($statusPriority[4]);
         $sco = $tracking->getSco();
         $scorm = ScormModel::where('id', $sco['scorm_id'])->firstOrFail();
         $updateResult = ScormScoTrackingModel::where('user_id', $tracking->getUserId())
             ->where('sco_id', $sco['id'])
             ->firstOrFail();
 
-//        $statusPriority = [
-//            'unknown' => 0,
-//            'not attempted' => 1,
-//            'browsed' => 2,
-//            'incomplete' => 3,
-//            'completed' => 4,
-//            'failed' => 5,
-//            'passed' => 6,
-//        ];
+        //        $statusPriority = [
+        //            'unknown' => 0,
+        //            'not attempted' => 1,
+        //            'browsed' => 2,
+        //            'incomplete' => 3,
+        //            'completed' => 4,
+        //            'failed' => 5,
+        //            'passed' => 6,
+        //        ];
 
         switch ($scorm->version) {
             case Scorm::SCORM_12:
-                if (isset($data['cmi.suspend_data']) && !empty($data['cmi.suspend_data'])) {
+                if (isset($data['cmi.suspend_data']) && ! empty($data['cmi.suspend_data'])) {
                     $tracking->setSuspendData($data['cmi.suspend_data']);
                 }
 
                 $scoreRaw = isset($data['cmi.core.score.raw']) ? intval($data['cmi.core.score.raw']) : $updateResult->score_raw;
                 $scoreMin = isset($data['cmi.core.score.min']) ? intval($data['cmi.core.score.min']) : $updateResult->score_min;
                 $scoreMax = isset($data['cmi.core.score.max']) ? intval($data['cmi.core.score.max']) : $updateResult->score_max;
-                $lessonStatus = isset($data['cmi.core.lesson_status']) ? $data['cmi.core.lesson_status'] : "unknown";
+                $lessonStatus = isset($data['cmi.core.lesson_status']) ? $data['cmi.core.lesson_status'] : 'unknown';
                 $sessionTime = isset($data['cmi.core.session_time']) ? $data['cmi.core.session_time'] : null;
                 $sessionTimeInHundredth = $this->convertTimeInHundredth($sessionTime);
                 $progression = isset($data['cmi.progress_measure']) ? floatval($data['cmi.progress_measure']) : 0;
@@ -344,7 +344,7 @@ class ScormController extends Controller
 
                 // Update best score if the current score is better than the previous best score
 
-                if (empty($bestScore) || (!is_null($scoreRaw) && (int)$scoreRaw > (int)$bestScore)) {
+                if (empty($bestScore) || (! is_null($scoreRaw) && (int) $scoreRaw > (int) $bestScore)) {
                     $tracking->setScoreRaw($scoreRaw);
                     $tracking->setScoreMin($scoreMin);
                     $tracking->setScoreMax($scoreMax);
@@ -355,7 +355,7 @@ class ScormController extends Controller
                     $bestStatus = $lessonStatus;
                 }
 
-                if (empty($progression) && ('completed' === $bestStatus || 'passed' === $bestStatus)) {
+                if (empty($progression) && ($bestStatus === 'completed' || $bestStatus === 'passed')) {
                     $progression = 100;
                 }
 
@@ -368,7 +368,7 @@ class ScormController extends Controller
             case Scorm::SCORM_2004:
                 $tracking->setDetails($data);
 
-                if (isset($data['cmi.suspend_data']) && !empty($data['cmi.suspend_data'])) {
+                if (isset($data['cmi.suspend_data']) && ! empty($data['cmi.suspend_data'])) {
                     $tracking->setSuspendData($data['cmi.suspend_data']);
                 }
 
@@ -403,7 +403,7 @@ class ScormController extends Controller
                 $tracking->setTotalTimeString($totalTimeInterval);
 
                 // Update best score if the current score is better than the previous best score
-                if (empty($bestScore) || (!is_null($scoreRaw) && (int)$scoreRaw > (int)$bestScore)) {
+                if (empty($bestScore) || (! is_null($scoreRaw) && (int) $scoreRaw > (int) $bestScore)) {
                     $tracking->setScoreRaw($scoreRaw);
                     $tracking->setScoreMin($scoreMin);
                     $tracking->setScoreMax($scoreMax);
@@ -426,7 +426,7 @@ class ScormController extends Controller
                     $tracking->setCompletionStatus($completionStatus);
                 }
 
-                if (empty($progression) && ('completed' === $bestStatus || 'passed' === $bestStatus)) {
+                if (empty($progression) && ($bestStatus === 'completed' || $bestStatus === 'passed')) {
                     $progression = 100;
                 }
 
@@ -472,7 +472,7 @@ class ScormController extends Controller
             $timeInHundredth = 0;
 
             if (isset($timeInArraySec[1])) {
-                if (1 === strlen($timeInArraySec[1])) {
+                if (strlen($timeInArraySec[1]) === 1) {
                     $timeInArraySec[1] .= '0';
                 }
                 $timeInHundredth = intval($timeInArraySec[1]);
@@ -490,18 +490,18 @@ class ScormController extends Controller
     private function retrieveIntervalFromSeconds($seconds): string
     {
         $result = '';
-        $remainingTime = (int)$seconds;
+        $remainingTime = (int) $seconds;
 
         if (empty($remainingTime)) {
             $result .= 'PT0S';
         } else {
-            $nbDays = (int)($remainingTime / 86400);
+            $nbDays = (int) ($remainingTime / 86400);
             $remainingTime %= 86400;
-            $nbHours = (int)($remainingTime / 3600);
+            $nbHours = (int) ($remainingTime / 3600);
             $remainingTime %= 3600;
-            $nbMinutes = (int)($remainingTime / 60);
+            $nbMinutes = (int) ($remainingTime / 60);
             $nbSeconds = $remainingTime % 60;
-            $result .= 'P' . $nbDays . 'DT' . $nbHours . 'H' . $nbMinutes . 'M' . $nbSeconds . 'S';
+            $result .= 'P'.$nbDays.'DT'.$nbHours.'H'.$nbMinutes.'M'.$nbSeconds.'S';
         }
 
         return $result;
@@ -513,7 +513,7 @@ class ScormController extends Controller
         $generalPattern = '/^P([0-9]+Y)?([0-9]+M)?([0-9]+D)?T([0-9]+H)?([0-9]+M)?([0-9]+S)?$/';
         $decimalPattern = '/^P([0-9]+Y)?([0-9]+M)?([0-9]+D)?T([0-9]+H)?([0-9]+M)?[0-9]+\.[0-9]{1,2}S$/';
 
-        if ('PT' !== $sessionTime) {
+        if ($sessionTime !== 'PT') {
             if (preg_match($generalPattern, $sessionTime)) {
                 $formattedValue = $sessionTime;
             } elseif (preg_match($decimalPattern, $sessionTime)) {

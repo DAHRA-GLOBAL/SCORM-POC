@@ -80,6 +80,6 @@
 
 
         </script>
-        <iframe src="{{asset('storage/5481612a-ac84-483c-8cc7-1584f43fe141/index_lms.html')}}" width="800" height="400"></iframe>
+        <iframe src="{{asset('storage/3068912c-bf6d-47ec-b06d-4dcc1ba1d61c/index_scorm.html')}}" width="800" height="400"></iframe>
     </div>
 </x-app-layout>
