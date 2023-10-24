@@ -132,7 +132,7 @@ class ScormController extends Controller
             if ($sessionTime == $totalTime || $tracking->lessonStatus == 'completed') {
                 $tracking->setProgression(100);
             } elseif ($tracking->lessonStatus == 'incomplete') {
-                $tracking->setProgression(50);
+                $tracking->setProgression(20);
             } else {
                 $tracking->setProgression($progression);
             }

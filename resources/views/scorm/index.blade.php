@@ -14,10 +14,22 @@
                             <h2 class="card-title">{{$scorm->title}}</h2>
                             <p>{{$scorm->identifier}}</p>
                             @foreach($scorm->scoTrackings as $sco)
-
                                 <progress class="progress progress-primary w-56" value="{{$sco->progression}}" max="100"></progress>
-                                <div class="radial-progress bg-primary text-primary-content border-4 border-primary" style="--value:{{$sco->progression}};">
-                                    {{$sco->progression}}%</div>
+                               <div class="flex justify-between my-2">
+                                 <div>
+                                     <p class="text-white">Time spent on this lesson</p>
+                                     <div class="radial-progress bg-primary text-primary-content border-4 border-primary" style="--value:{{number_format( $sco->session_time/$sco->total_time_int*100,2, '.', '')}};">
+                                         {{number_format( $sco->session_time/$sco->total_time_int*100,2, '.', '')}}%</div>
+                                 </div>
+                                   <div class="stats shadow w-fit overflow-hidden items-center justify-center">
+
+                                       <div class="stat">
+                                           <div class="stat-title">Lesson Total time</div>
+                                           <div class="stat-value">{{$sco->total_time_int}}</div>
+                                       </div>
+
+                                   </div>
+                               </div>
                             @endforeach
                             <div class="card-actions justify-end">
                                 <a href="{{route('scorm.show',$scorm->uuid)}}">
