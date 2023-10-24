@@ -16,6 +16,7 @@
                 "data": {
                     "uuid": "{{ $item->uuid }}"
                 },
+
                 };
             window.API = new Scorm12API(settings);
             console.log(window.API);
@@ -80,6 +81,6 @@
 
 
         </script>
-        <iframe src="{{asset('storage/3068912c-bf6d-47ec-b06d-4dcc1ba1d61c/index_scorm.html')}}" width="800" height="400"></iframe>
+        <iframe src="{{$entryUrl}}" width="800" height="400"></iframe>
     </div>
 </x-app-layout>

@@ -34,7 +34,11 @@ class ScormController extends Controller
      */
     public function index()
     {
-        $scorms = ScormModel::all();
+        $scorms = ScormScoModel::with('scoTrackings', 'scorm')->get();
+        //        foreach ($scorms as $scorm) {
+        //            $scormWithTracking = $scorm->scoTrackings();
+        //            dd($scormWithTracking->progression);
+        //        }
 
         return view('scorm.index', compact('scorms'));
     }
@@ -87,10 +91,13 @@ class ScormController extends Controller
      */
     public function show(Scorm $scorm)
     {
-        $item = ScormScoModel::with('scoTrackings')->first();
+        $item = ScormScoModel::with('scoTrackings', 'scorm')->first();
+
+        $scorm = $item->scorm;
+        $entryUrl = asset('storage/'.$scorm->uuid.'/'.$scorm->entry_url);
 
         // response helper function from base controller reponse json.
-        return view('scorm.play', compact('item'));
+        return view('scorm.play', compact('item', 'entryUrl'));
     }
 
     //real call to create scorm
@@ -124,6 +131,10 @@ class ScormController extends Controller
             $tracking->setSuspendData($request->input('data.core.suspend_data'));
             if ($sessionTime == $totalTime || $tracking->lessonStatus == 'completed') {
                 $tracking->setProgression(100);
+            } elseif ($tracking->lessonStatus == 'incomplete') {
+                $tracking->setProgression(50);
+            } else {
+                $tracking->setProgression($progression);
             }
             $tracking->setScoreMin($request->input('data.core.score.min'));
 
